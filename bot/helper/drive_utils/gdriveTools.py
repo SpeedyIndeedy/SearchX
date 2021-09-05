@@ -11,7 +11,7 @@ from googleapiclient.errors import HttpError
 
 from telegram import InlineKeyboardMarkup
 from bot.helper.telegram_helper import button_builder
-from bot import DRIVE_NAME, DRIVE_ID, INDEX_URL, telegra_ph
+from bot import DRIVE_NAME, DRIVE_ID, INDEX_URL, LIB_URL, telegra_ph
 
 LOGGER = logging.getLogger(__name__)
 logging.getLogger('googleapiclient.discovery').setLevel(logging.ERROR)
@@ -158,25 +158,31 @@ class GoogleDriveHelper:
                 for file in response:
 
                     if add_title_msg == True:
-                        msg = f'<h3>I found these results for your search query: {fileName}</h3><br><b><a href="https://github.com/iamLiquidX/SearchX"> Bot Repo </a></b>'
+                        msg = f'<h3>Search results: {fileName}</h3><br>'
                         add_title_msg = False
                     if add_drive_title == True:
-                        msg += f"<br><b>{DRIVE_NAME[INDEX]}</b><br><br>"
+                        msg += f"➖➖➖➖➖➖➖➖➖➖➖➖➖➖<br><b>{DRIVE_NAME[INDEX]}</b><br>➖➖➖➖➖➖➖➖➖➖➖➖➖➖<br>"
                         add_drive_title = False
                     if file.get('mimeType') == "application/vnd.google-apps.folder":  # Detect Whether Current Entity is a Folder or File.
                         msg += f"🗃️<code>{file.get('name')}</code> <b>(folder)</b><br>" \
-                               f"<b><a href='https://drive.google.com/drive/folders/{file.get('id')}'>Google Drive link</a></b>"
+                               #f"<b><a href='https://drive.google.com/drive/folders/{file.get('id')}'>Google Drive link</a></b>"
                         if INDEX_URL[INDEX] is not None:
                             url_path = "/".join([requests.utils.quote(n, safe='') for n in self.get_recursive_list(file, parent_id)])
                             url = f'{INDEX_URL[INDEX]}/{url_path}/'
-                            msg += f'<b> | <a href="{url}">Index link</a></b>'
+                            msg += f'<b><a href="{url}">Index link</a></b>'
+                        if LIB_URL[INDEX] is not None:
+                                lib_path = f'{LIB_URL[INDEX]}/view/{file.get("id")}/'
+                                msg += f'<b>| <a href="{lib_path}">libDrive Link</a></b>'
                     else:
                         msg += f"<code>{file.get('name')}</code> <b>({self.get_readable_file_size(file.get('size'))})</b><br>" \
-                               f"<b><a href='https://drive.google.com/uc?id={file.get('id')}&export=download'>Google Drive link</a></b>"
+                               #f"<b><a href='https://drive.google.com/uc?id={file.get('id')}&export=download'>Google Drive link</a></b>"
                         if INDEX_URL[INDEX] is not None:
                             url_path = "/".join([requests.utils.quote(n, safe ='') for n in self.get_recursive_list(file, parent_id)])
                             url = f'{INDEX_URL[INDEX]}/{url_path}'
-                            msg += f'<b> | <a href="{url}">Index link</a></b>'
+                            msg += f'<b><a href="{url}">Index link</a></b>'
+                        if LIB_URL[INDEX] is not None:
+                                lib_path = f'{LIB_URL[INDEX]}/view/{file.get("id")}/'
+                                msg += f'<b>| <a href="{lib_path}">libDrive Link</a></b>'
                     msg += '<br><br>'
                     content_count += 1
                     if (content_count >= TELEGRAPHLIMIT):
@@ -206,7 +212,7 @@ class GoogleDriveHelper:
         msg = f"Found {content_count}" + ("+" if content_count >= 90 else "") + " results"
 
         if reached_max_limit:
-            msg += ". (Only showing top 90 results. Omitting remaining results)"
+            msg += ". (Too many results. Only showing top 90.)"
 
         buttons = button_builder.ButtonMaker()
         buttons.buildbutton("Click Here for results", f"https://telegra.ph/{self.path[0]}")
