@@ -52,6 +52,7 @@ except KeyError as e:
 DRIVE_NAME = []
 DRIVE_ID = []
 INDEX_URL = []
+LIB_URL = []
 
 if os.path.exists('drive_folder'):
     with open('drive_folder', 'r+') as f:
@@ -64,6 +65,10 @@ if os.path.exists('drive_folder'):
                 INDEX_URL.append(temp[2])
             except IndexError as e:
                 INDEX_URL.append(None)
+            try:
+                LIB_URL.append(temp[3])
+            except:
+                LIB_URL.append(None)
 
 if DRIVE_ID :
     pass
