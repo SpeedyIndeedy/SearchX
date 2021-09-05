@@ -3,10 +3,11 @@ import re
 print("\n\n"\
       "        Bot can search files recursively, but you have to add the list of drives you want to search.\n"\
       "        Use the following format: (You can use 'root' in the ID in case you wan to use main drive.)\n"\
-      "        teamdrive NAME      -->   anything that u likes\n"\
-      "        teamdrive ID        -->   id of teamdrives in which u likes to search ('root' for main drive)\n"\
-      "        teamdrive INDEX URL -->   enter index url for this drive.\n" \
-      "                                     goto the respective drive and copy the url from address bar\n")
+      "        Teamdrive NAME      -->   anything that u like\n"\
+      "        Teamdrive ID        -->   id of teamdrives in which u likes to search ('root' for main drive)\n"\
+      "        Teamdrive INDEX URL -->   enter index url for this drive.\n" \
+      "                                     goto the respective drive and copy the url from address bar\n"\
+      "        LibDrive URL        -->   enter libdrive url for this drive. \n")
 msg = ''
 if os.path.exists('drive_folder'):
     with open('drive_folder', 'r+') as f:
@@ -32,6 +33,7 @@ while count <= num :
     name  = input("    Enter Drive NAME  (anything)     : ")
     id    = input("    Enter Drive ID                   : ")
     index = input("    Enter Drive INDEX URL (optional) : ")
+    libdrive = input("    Enter Libdrive URL (optional) : ")
     if not name or not id:
         print("\n\n        ERROR : Dont leave the name/id without filling.")
         exit(1) 
@@ -41,8 +43,13 @@ while count <= num :
             index = index[:-1]
     else:
         index = ''
+    if libdrive:
+        if libdrive[-1] == "/":
+            libdrive = libdrive[:-1]
+    else:
+        index = ''
     count+=1
-    msg += f"{name} {id} {index}\n"
+    msg += f"{name} {id} {index} {libdrive}\n"
 with open('drive_folder', 'w') as file:
     file.truncate(0)
     file.write(msg)
